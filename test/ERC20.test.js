@@ -7,7 +7,10 @@ describe("ERC20 Test Suite", function(){
     let signer, otherAccount
 
     it("Deploy Contract", async function(){
-        
+        const ERC20Contract = await ethers.getContractFactory("MyCoin")
+        deployedERC20Contract = await ERC20Contract.deploy(5000,2)
+        await deployedERC20Contract.waitForDeployment()
+        console.log(deployedERC20Contract.target)
     })
 
     it("Get Signers", async function(){

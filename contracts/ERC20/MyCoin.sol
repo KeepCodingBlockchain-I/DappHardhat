@@ -22,6 +22,9 @@ contract MyCoin is ERC20,Ownable{
      */
 
     uint8 public decimal;
+    bool public status = true;     //inicialize in True
+
+    mapping(address => bool) public blackList;
 
     /**
      * -----------------------------------------------------------------------------------------------------
@@ -47,6 +50,7 @@ contract MyCoin is ERC20,Ownable{
      */
 
     error BalanceInsuficiente(address sender, uint256 value);
+    error TransfersOff(bool currentStatus);
 
     /**
      * -----------------------------------------------------------------------------------------------------
@@ -60,6 +64,12 @@ contract MyCoin is ERC20,Ownable{
             revert BalanceInsuficiente(msg.sender, _value);
             require(true, "No tiene saldo suficiente la direccion esta");
         }
+        _;
+    }
+
+    //modifier that blocks blacklisted accounts to do transfers
+    modifier blackListed(address _wallet) {
+        require(!blackList[_wallet], "This wallet is in the blacklist");
         _;
     }
 
@@ -80,7 +90,10 @@ contract MyCoin is ERC20,Ownable{
         return balance;
     }
 
-    function doTransfer(address _to, uint256 _value) public returns(bool){
+    function doTransfer(address _to, uint256 _value) public blackListed(msg.sender) returns(bool){
+        if(status != true) {
+            revert TransfersOff(status);
+        }     
         bool result = transfer(_to, _value);
         return result;
     }
@@ -92,6 +105,27 @@ contract MyCoin is ERC20,Ownable{
     function setDecimals(uint8 _decimal) public onlyOwner returns(uint8){
         decimal = _decimal;
         return decimal;
+    }
+
+    /*Mintea nuevos tokens que va a recibir una direccion 
+    @param _amount cantidad de tokens que se van a mintear  
+    @param _receiver address de quien va a recibir los tokens*/
+
+    function mintNewTokens(uint256 _amount, address _receiver) public onlyOwner{
+        require(_amount > 0, "Cant mint 0 tokens");
+        _mint(_receiver, _amount);
+
+    }
+
+    //function to block all the transfers
+    function transferSwitcher(bool _off) public onlyOwner {
+        status = _off;
+        //we swap status(True) to Off(False)
+    }
+
+    function frozeAccount(address _wallet) public view onlyOwner {
+       require(blackList[_wallet] == false, "This wallet is already blacklisted man");
+        blackList[_wallet] == true;
     }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 }

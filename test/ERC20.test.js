@@ -54,5 +54,30 @@ describe("ERC20 Test Suite", function(){
 
     })
 
+    it("Check switcher", async function(){
+        //Comprobar estado inicial
+        const status = await deployedERC20Contract.status()
+        expect(status).to.be.true
+        //cambiar estado
+        const response = await deployedERC20Contract.switcher()
+        const finalstatus = await deployedERC20Contract.status()
+        //comprobar estado final
+        expect(finalstatus).to.be.false
+    })
 
+    //checkeamos si efectivamente esta desactivado
+    it("Check trasnfers are not allowed", async function(){
+        await expect(
+            deployedERC20Contract.doTransfer(otherAccount.address,100)
+        ).to.be.revertedWith //mesage from modifier
+    })
+
+    it("Check blacklist", async function(){
+        //comprobar si una wallet está en la blacklist
+
+
+        //switchear y meter una wallet en la blacklist
+
+        //comprobar que efectivamente esta en la blacklisrt
+    })
 }) 

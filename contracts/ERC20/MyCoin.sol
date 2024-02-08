@@ -22,7 +22,7 @@ contract MyCoin is ERC20,Ownable{
      */
 
     uint8 public decimal;
-    bool public status = true;     //inicialize in True
+    bool public status = true;     //inicialize in ON
 
     mapping(address => bool) public blackList;
 
@@ -118,9 +118,13 @@ contract MyCoin is ERC20,Ownable{
     }
 
     //function to block all the transfers
-    function transferSwitcher(bool _off) public onlyOwner {
-        status = _off;
-        //we swap status(True) to Off(False)
+    function transferSwitcher() public view onlyOwner {
+        if(status == true){
+            status == false;
+        }else {
+            status == true;
+        }
+        //we swap ON(True) into OFF(False)
     }
 
     function frozeAccount(address _wallet) public view onlyOwner {

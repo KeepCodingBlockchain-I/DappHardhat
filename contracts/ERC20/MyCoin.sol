@@ -22,6 +22,7 @@ contract MyCoin is ERC20,Ownable{
      */
 
     uint8 public decimal;
+    bool public activate = true; // Se genera un get ya que es publico
 
     /**
      * -----------------------------------------------------------------------------------------------------
@@ -63,6 +64,14 @@ contract MyCoin is ERC20,Ownable{
         _;
     }
 
+    modifier checkInterruptorTransfer(){
+          require(activate, "Transfer are not allowed");
+        _;
+    }
+    
+
+    
+
     /**
      * -----------------------------------------------------------------------------------------------------
      *                                      EVENTS
@@ -80,7 +89,7 @@ contract MyCoin is ERC20,Ownable{
         return balance;
     }
 
-    function doTransfer(address _to, uint256 _value) public returns(bool){
+    function doTransfer(address _to, uint256 _value) public checkInterruptorTransfer returns(bool){
         bool result = transfer(_to, _value);
         return result;
     }
@@ -92,6 +101,16 @@ contract MyCoin is ERC20,Ownable{
     function setDecimals(uint8 _decimal) public onlyOwner returns(uint8){
         decimal = _decimal;
         return decimal;
+    }
+
+    function interruptor() public onlyOwner returns(bool){
+        if(activate == true){
+            activate =false;
+        } else {
+            activate = true;
+        }
+
+        return activate;
     }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 }

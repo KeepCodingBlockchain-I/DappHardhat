@@ -14,9 +14,8 @@
     "hardhat": "^2.19.5"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.2",
     "dotenv": "^16.4.1",
-    "ethers": "^6.1.0",
-    "node": "^21.6.1"
+    "ethers": "^5.7.2",
+    "@openzeppelin/contracts": "^4.9.2"
   }
 }

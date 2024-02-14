@@ -81,6 +81,8 @@ contract MyMarketPlace is Ownable{
      * -----------------------------------------------------------------------------------------------------
      */
 
+    //error StatusOff()
+
     /**
      * Los errores son lanzados mediante la instruccion revert, normalmente despues de comprobar una condicion.
      * El nombre del error explica cual es el motivo por el se ha revertido la transaccion. 
@@ -120,11 +122,9 @@ contract MyMarketPlace is Ownable{
     //Porque quien va a realizar las llamadas de transferencia (transferFrom) va a ser el contrato del MarketPlace
     
     function createSale(uint256 _tokenId, uint256 _price) onlyOwner() public{
-        //Ejemplo de uso de los contratos externos
-        // MyNFTCollection.ownerOfToken(_tokenId)
-
-        Sale storage 
-        //mapping(uint256 => Sale) public sales;
+        
+        Sale storage    //es correcto así?
+        
         sale = sales[_tokenId]; //variable que contiene la info del mapping con el id de esta venta
 
         sale.owner = msg.sender;
@@ -139,8 +139,17 @@ contract MyMarketPlace is Ownable{
         incrementCounter();
     }
 
-    function buySale(uint256 _saleId) public{
-            
+    function buySale(uint256 _saleId) public payable  {
+
+        Sale storage
+        //revisar logica
+        sale = sales[_saleId]; //?
+
+        require(msg.value > sale.price, "You don't have enought tokens");
+        require(sale.status == SaleStatus.Open, "Sale is currently not open");
+
+        MyCoinContract.transferFrom(msg.sender, address(this), sale.price); 
+        MyNFTCollectionContract.transferFrom(address(this), msg.sender, sale.tokenId);   
     }
 
     function canceSale(uint256 _saleId) public{

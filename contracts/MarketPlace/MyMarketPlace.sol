@@ -5,6 +5,7 @@ pragma solidity ^0.8.17;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IMyCoin} from "../ERC20/IMyCoin.sol";
 import {IMyNFTCollection} from "../ERC721/IMyNFTCollection.sol";
+//importamos la interfaz de los dos otros contratos
 
 /**
  * @title 
@@ -118,9 +119,24 @@ contract MyMarketPlace is Ownable{
     //Para la resolucion de la practica es necesario utilizar la funcion transferFrom tanto del ERC20 como del ERC721.
     //Porque quien va a realizar las llamadas de transferencia (transferFrom) va a ser el contrato del MarketPlace
     
-    function createSale(uint256 _tokenId, uint256 _price) public{
+    function createSale(uint256 _tokenId, uint256 _price) onlyOwner() public{
         //Ejemplo de uso de los contratos externos
         // MyNFTCollection.ownerOfToken(_tokenId)
+
+        Sale storage 
+        //mapping(uint256 => Sale) public sales;
+        sale = sales[_tokenId]; //variable que contiene la info del mapping con el id de esta venta
+
+        sale.owner = msg.sender;
+        sale.tokenId = _tokenId;
+        sale.price = _price;
+        sale.status = SaleStatus.Open;
+
+        require(sale.status == SaleStatus.Open, "Sale is currently not open");
+
+        //llamamos funcion transferFrom del contrato NFT
+        MyNFTCollectionContract.transferFrom(msg.sender, address(this), _tokenId);
+        incrementCounter();
     }
 
     function buySale(uint256 _saleId) public{

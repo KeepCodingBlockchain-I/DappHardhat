@@ -149,6 +149,8 @@ contract MyMarketPlace is Ownable{
     function buySale(uint256 _saleId) public {
         //Creamos una instancia del Objeto Sale para guardar el _saleId en nuestro mapping sales.
         Sale storage buysale = sales[_saleId];
+        buysale.saleId = _saleId;
+        buysale.owner = msg.sender;
         //Comprueba que la venta esta en estado abierto para que se pueda realizar la compra
         require(buysale.status == SaleStatus.Open, "The purchase is not in open status");
         //Comprueba que el comprador tiene suficiente MyCoin para realizar la compra
@@ -172,8 +174,10 @@ contract MyMarketPlace is Ownable{
     function canceSale(uint256 _saleId) public{
         //Creamos una instancia del Objeto Sale para guardar el _saleId en nuestro mapping sales.
         Sale storage cancelsale = sales[_saleId];
-        //Comprueba que la venta esta en estado ejecutado para que se pueda realizar la cancelacion
-        require(cancelsale.status == SaleStatus.Executed, "The sale is not in open status");
+        cancelsale.saleId = _saleId;
+        cancelsale.owner = msg.sender;
+        //Comprueba que la venta esta en estado abierto para que se pueda realizar la compra
+        require(cancelsale.status == SaleStatus.Open, "The purchase is not in open status");
         //Devuelve el token ERC721 desde MyMarketPlace al propietario
         IMyNFTCollection(msg.sender).transferFrom(address(this), cancelsale.owner, _saleId);
         // Actualiza el estado de la compra a cancelado

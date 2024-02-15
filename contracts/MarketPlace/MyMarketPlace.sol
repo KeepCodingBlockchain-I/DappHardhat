@@ -82,6 +82,8 @@ contract MyMarketPlace is Ownable{
      */
 
     //error StatusOff()
+    //error PriceToHigh()
+    //error 
 
     /**
      * Los errores son lanzados mediante la instruccion revert, normalmente despues de comprobar una condicion.
@@ -143,21 +145,37 @@ contract MyMarketPlace is Ownable{
 
         Sale storage
         //revisar logica
-        sale = sales[_saleId]; //?
+        sale = sales[_saleId];
 
-        require(msg.value > sale.price, "You don't have enought tokens");
+        require(msg.value >= sale.price, "You don't have enought tokens");
         require(sale.status == SaleStatus.Open, "Sale is currently not open");
 
-        MyCoinContract.transferFrom(msg.sender, address(this), sale.price); 
+        payable(sale.owner).transfer(msg.value);
         MyNFTCollectionContract.transferFrom(address(this), msg.sender, sale.tokenId);   
+
+        SaleStatus status;
+        status = SaleStatus.Executed;
     }
 
     function canceSale(uint256 _saleId) public{
 
+        Sale storage
+        sale = sales[_saleId];
+
+        SaleStatus status;
+
+        require(sale.status == SaleStatus.Open, "This sale is already cancelled");
+        status = SaleStatus.Cancelled;
+        MyNFTCollectionContract.transferFrom(address(this), msg.sender, _saleId);
     }
 
     function getSale(uint256 _saleId) public view returns(Sale memory){
+        Sale memory
+        sale = sales[_saleId];
 
+        require(sale.owner != address(0), "Id not existing");  //me cuesta entenderlo, no sabia como hacerlo (chatGPT)
+
+        return(sale);
     }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 }

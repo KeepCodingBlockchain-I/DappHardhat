@@ -4,8 +4,8 @@ describe("MarketPlace Test Suite", function(){
 
     let deployedMarketPlaceContract
 
-    let signer, otherAccount, tokenContractAddress, ownerAddress
-    let tokenId, saleId, price, buyer
+    let signer, otherAccount, tokenContractAddress, ownerAddress //Signers
+    let tokenId, saleId, price, buyer // Sales
 
     it("Deploy Contract", async function(){
         const marketPlaceContract = await ethers.getContractFactory("MyMarketPlace")
@@ -30,7 +30,7 @@ describe("MarketPlace Test Suite", function(){
         console.log(signer.address) // Direccion del creador de la venta
         console.log(otherAccount.address) // Direccion del comprador de la venta(Compra con Mycoin)
         console.log(tokenContractAddress.address) // Direccion del contrato MyMarketPlace
-        console.log(ownerAddress.address) // Direccion del dueño del NFT ERC721
+        console.log(ownerAddress.address) // Direccion del dueño del TokenID
     })
 
     it("Should allow the owner to create a sale", async function(){

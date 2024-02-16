@@ -170,6 +170,7 @@ contract MyMarketPlace is Ownable{
     }
 
     function getSale(uint256 _saleId) public view returns(Sale memory){
+        
         Sale memory
         sale = sales[_saleId];
 

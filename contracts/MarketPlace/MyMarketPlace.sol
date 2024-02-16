@@ -45,6 +45,8 @@ contract MyMarketPlace is Ownable{
     struct Sale{
         //Propietario del token y de la venta
         address owner;
+        //ID de la venta
+        uint256 saleId;
         //Id del token ERC721 (NFT)
         uint256 tokenId;
         //Cantidad de tokens ERC20 que tiene que pagar el comprador
@@ -123,13 +125,14 @@ contract MyMarketPlace is Ownable{
     //Para la resolucion de la practica es necesario utilizar la funcion transferFrom tanto del ERC20 como del ERC721.
     //Porque quien va a realizar las llamadas de transferencia (transferFrom) va a ser el contrato del MarketPlace
     
-    function createSale(uint256 _tokenId, uint256 _price) onlyOwner() public{
+    function createSale(uint256 _tokenId, uint256 _price) public onlyOwner(){
         
         Sale storage    //es correcto así?
         
         sale = sales[_tokenId]; //variable que contiene la info del mapping con el id de esta venta
-
+        //actualizamos el struct Sale
         sale.owner = msg.sender;
+        sale.saleId = saleIdCounter;
         sale.tokenId = _tokenId;
         sale.price = _price;
         sale.status = SaleStatus.Open;
@@ -138,7 +141,7 @@ contract MyMarketPlace is Ownable{
 
         //llamamos funcion transferFrom del contrato NFT
         MyNFTCollectionContract.transferFrom(msg.sender, address(this), _tokenId);
-        incrementCounter();
+        incrementCounter(); //incrementamos el contador de ventas
     }
 
     function buySale(uint256 _saleId) public payable  {
@@ -170,13 +173,13 @@ contract MyMarketPlace is Ownable{
     }
 
     function getSale(uint256 _saleId) public view returns(Sale memory){
-        
+
         Sale memory
         sale = sales[_saleId];
 
-        require(sale.owner != address(0), "Id not existing");  //me cuesta entenderlo, no sabia como hacerlo (chatGPT)
+        require(_saleId > 0, "IDs cant be negatives");
+        require(sale.saleId == _saleId, "Id not found");  
 
-        return(sale);
-    }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+        return sale;
+    }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 }

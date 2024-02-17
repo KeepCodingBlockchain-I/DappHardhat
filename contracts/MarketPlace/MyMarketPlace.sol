@@ -125,36 +125,37 @@ contract MyMarketPlace is Ownable{
     //Para la resolucion de la practica es necesario utilizar la funcion transferFrom tanto del ERC20 como del ERC721.
     //Porque quien va a realizar las llamadas de transferencia (transferFrom) va a ser el contrato del MarketPlace
     
-    function createSale(uint256 _tokenId, uint256 _price) public onlyOwner(){
+    function createSale(uint256 _tokenId, uint256 _price) public /*onlyOwner()*/{
         
-        Sale storage    //es correcto así?
+        Sale memory newSale = Sale({
+            owner: msg.sender,
+            saleId: saleIdCounter,
+            tokenId: _tokenId,
+            price: _price,
+            status: SaleStatus.Open
+        });   //es correcto así?
         
-        sale = sales[_tokenId]; //variable que contiene la info del mapping con el id de esta venta
+        sales[saleIdCounter] = newSale; //variable que contiene la info del mapping con el id de esta venta
         //actualizamos el struct Sale
-        sale.owner = msg.sender;
-        sale.saleId = saleIdCounter;
-        sale.tokenId = _tokenId;
-        sale.price = _price;
-        sale.status = SaleStatus.Open;
-
-        require(sale.status == SaleStatus.Open, "Sale is currently not open");
+    
+       require(newSale.status == SaleStatus.Open, "Sale is currently not open");
 
         //llamamos funcion transferFrom del contrato NFT
         MyNFTCollectionContract.transferFrom(msg.sender, address(this), _tokenId);
         incrementCounter(); //incrementamos el contador de ventas
     }
 
-    function buySale(uint256 _saleId) public payable  {
+    function buySale(uint256 _saleId) public {
 
         Sale storage
         //revisar logica
         sale = sales[_saleId];
 
-        require(msg.value >= sale.price, "You don't have enought tokens");
+        require(MyCoinContract.balanceOf(msg.sender) >= sale.price, "You don't have enought tokens");
         require(sale.status == SaleStatus.Open, "Sale is currently not open");
 
-        payable(sale.owner).transfer(msg.value);
         MyNFTCollectionContract.transferFrom(address(this), msg.sender, sale.tokenId);   
+        MyCoinContract.transferFrom(msg.sender, sale.owner, sale.price);
 
         SaleStatus status;
         status = SaleStatus.Executed;
@@ -177,7 +178,7 @@ contract MyMarketPlace is Ownable{
         Sale memory
         sale = sales[_saleId];
 
-        require(_saleId > 0, "IDs cant be negatives");
+        require(_saleId >= 0, "IDs cant be negatives");
         require(sale.saleId == _saleId, "Id not found");  
 
         return sale;

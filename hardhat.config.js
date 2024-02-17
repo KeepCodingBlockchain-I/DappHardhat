@@ -3,6 +3,7 @@ require("dotenv").config(
   {path:".env"}
 );
 
+//sacar las addresses
 const ALCHEMY_HTTP_KEY = process.env.ALCHEMY_HTTP_KEY
 const DEPLOYER_PRIVATE_KEY = process.env.DEPLOYER_PRIVATE_KEY
 
@@ -11,10 +12,10 @@ const DEPLOYER_PRIVATE_KEY = process.env.DEPLOYER_PRIVATE_KEY
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: "0.8.19",
-  networks:{
+  /*networks:{
     mumbai:{
       url:ALCHEMY_HTTP_KEY,
       accounts: [DEPLOYER_PRIVATE_KEY]
     }
-  }
+  }*/
 };

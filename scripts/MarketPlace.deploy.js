@@ -12,6 +12,7 @@ async function deploy(deployedERC20Contract, deployedERC721Contract){
     contractAddress = deployedMyMarketPlaceContract.target
 
     console.log("...MyMarketPlace contract has been deployed to: " + contractAddress)
+    console.log(contractAddress.address)
 }
 
 async function verify(){}

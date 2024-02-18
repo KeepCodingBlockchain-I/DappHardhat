@@ -45,9 +45,9 @@ const getNetwork = async () => {
 // 2- Contract Address, porque una referencia de donde atacar en la blockchain
 // 3- Contract ABI (Application Binary Interface), porque necesitamos lo que puede hacer el contrato
 
-let contractAddress = "0xe745d1eDdB571C3FDd6a73477c7f08DB3Bf2dF23"
+let contractAddress = "0x318e8252efa3fd7729d07adbe75201fa0d761349"  //contrato del MarketPlace
 
-import ContractABI from "../../artifacts/contracts/ERC20/MyCoin.sol/MyCoin.json" assert {type: "json"}
+import ContractABI from "../../artifacts/contracts/MarketPlace/MyMarketPlace.sol/MyMarketPlace.json" assert {type: "json"}
 const ContractInterface = new ethers.utils.Interface(ContractABI.abi)
 const ContractABIFormatted = ContractInterface.format(ethers.utils.FormatTypes.full)
 
@@ -63,29 +63,36 @@ const getMyCoinBalance = async () => {
 
 }
 
-const trasnferMyCoin = async () => {
+const createSale = async () => {
     contractWrite = new ethers.Contract(contractAddress,ContractABIFormatted,signer)
-    const decimals = await contractWrite.decimals()
-    const amount = ethers.utils.parseUnits("5.0",decimals)
-    const tx = await contractWrite.doTransfer(
-        "0x9248a1D30c120c1da0F7bf51B6AC401AF81a7f0E",
-        amount
-    )
+
     await tx.wait()
     console.log(tx)
     alert("Transaccion Realizada Correctamente")
 }
 
-const transferMyCoin = document.getElementById("transferMyCoin")
-transferMyCoin.addEventListener("click", async () => {
-    await trasnferMyCoin()
+const creatingSale = document.getElementById("CreateSale")
+creatingSale.addEventListener("click", async () => {
+    await createSale()
 })
 
-const metamaskButton = document.getElementById("metamaskButton")
+const buyingNFT = async () => {
+    contractWrite = new ethers.Contract(contractAddress,ContractABIFormatted,signer)
+
+    await tx.wait()
+    console.log(tx)
+    alert("Transaccion Realizada Correctamente")
+}
+
+const buyNFT = document.getElementById("BuyNFT")
+buyNFT.addEventListener("click", async () => {
+    await buyingNFT()
+})
+
+const metamaskButton = document.getElementById("CreateSale")
 metamaskButton.addEventListener("click", async () =>{
-    console.log("Hola, soy el boton Connect Metamask y esta es tu address:")
     await connectMetamask()
     await getNativeBalance()
     await getNetwork()
-    await getMyCoinBalance()
+    await createSale()
 })

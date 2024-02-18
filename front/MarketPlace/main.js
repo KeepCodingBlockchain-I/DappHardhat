@@ -1,4 +1,4 @@
-/*let address, provider, signer, contractRead, contractWrite
+let address, provider, signer, contractRead, contractWrite
 
 const connectMetamask = async () => {
     // A Web3Provider wraps a standard Web3 provider, which is
@@ -88,4 +88,4 @@ metamaskButton.addEventListener("click", async () =>{
     await getNativeBalance()
     await getNetwork()
     await getMyCoinBalance()
-})*/
+})

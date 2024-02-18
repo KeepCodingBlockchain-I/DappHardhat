@@ -101,15 +101,15 @@ describe("MarketPlace test suit", function(){
     it("Test the cancellation", async function(){
         //new sale
         await deployedERC721Contract.connect(signer).mintNewToken();
-        await deployedERC721Contract.connect(signer).approve(deployedMyMarketPlaceContract.target, 5);
-        await deployedMyMarketPlaceContract.connect(signer).createSale(5, 12); // tokenId=5, price=12, pero saleId es 3
+        await deployedERC721Contract.connect(signer).approve(deployedMyMarketPlaceContract.target, 4);
+        await deployedMyMarketPlaceContract.connect(signer).createSale(4, 1); // tokenId=4, price=1, pero saleId es 3
     
         //we check the new sale (3)
         const saleChecked = await deployedMyMarketPlaceContract.getSale(3);
         expect(saleChecked[0]).to.equal(signer.address);
         expect(saleChecked[1]).to.equal(3);
-        expect(saleChecked[2]).to.equal(5);
-        expect(saleChecked[3]).to.equal(12);
+        expect(saleChecked[2]).to.equal(4);
+        expect(saleChecked[3]).to.equal(1);
         expect(saleChecked[4]).to.equal(0);
     
         //we cancel the sale

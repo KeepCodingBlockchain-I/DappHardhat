@@ -45,7 +45,7 @@ contract MyMarketPlace is Ownable{
     struct Sale{
         //Propietario del token y de la venta
         address owner;
-        //ID de la venta
+        //ID de la venta (añadido)
         uint256 saleId;
         //Id del token ERC721 (NFT)
         uint256 tokenId;
@@ -125,6 +125,14 @@ contract MyMarketPlace is Ownable{
     //Para la resolucion de la practica es necesario utilizar la funcion transferFrom tanto del ERC20 como del ERC721.
     //Porque quien va a realizar las llamadas de transferencia (transferFrom) va a ser el contrato del MarketPlace
     
+
+    /**
+     * Crea un Sale.
+     * Actualizaremos el "struct" Sale con los datos de la nueva venta.
+     * Requerimos que el estatus sea Open.
+     * Dropeamos el NFT al contrato del MarkePlace.
+     * Llamamos la funcion incrementCounter para que la siguiente venta tnega un ID++.
+     */
     function createSale(uint256 _tokenId, uint256 _price) public /*onlyOwner()*/{
         
         Sale memory newSale = Sale({
@@ -133,22 +141,27 @@ contract MyMarketPlace is Ownable{
             tokenId: _tokenId,
             price: _price,
             status: SaleStatus.Open
-        });   //es correcto así?
+        });
         
         sales[saleIdCounter] = newSale; //variable que contiene la info del mapping con el id de esta venta
-        //actualizamos el struct Sale
     
-       require(newSale.status == SaleStatus.Open, "Sale is currently not open");
+        require(newSale.status == SaleStatus.Open, "Sale is currently not open");
 
-        //llamamos funcion transferFrom del contrato NFT
         MyNFTCollectionContract.transferFrom(msg.sender, address(this), _tokenId);
         incrementCounter(); //incrementamos el contador de ventas
     }
 
+    /**
+     * Crea una compra.
+     * Requerimos que el balance sea = o superior al precio del NFT.
+     * Indicamos que sera la venta con el saleId que pasamos como parametro.
+     * Requerimos que el status sea Open.
+     * Transferimos el NFT a la address del comprador.
+     * Transferimos los tokens del comprador al MarketPlace.
+     */
     function buySale(uint256 _saleId) public {
 
         Sale storage
-        //revisar logica
         sale = sales[_saleId];
 
         require(MyCoinContract.balanceOf(msg.sender) >= sale.price, "You don't have enought tokens");
@@ -161,19 +174,30 @@ contract MyMarketPlace is Ownable{
         status = SaleStatus.Executed;
     }
 
+    /**
+     * Cancelamos una venta.
+     * Indicamos que sera la venta con el saleId que pasamos como parametro.
+     * Cambiamos el status a Cancelled.
+     * Transferimos el NFT de vuelta al owner.
+     */
     function cancelSale(uint256 _saleId) public {
 
-        Sale storage sale = sales[_saleId];
+        Sale storage 
+        sale = sales[_saleId];
 
         require(sale.status == SaleStatus.Open, "This sale is already cancelled");
 
-        //we update to "Cancelled"
         sale.status = SaleStatus.Cancelled;
 
-        //Transfer back the NFT
         MyNFTCollectionContract.transferFrom(address(this), sale.owner, sale.tokenId);
     }
 
+    /**
+     * Funcion "getter" que devuelve el estado de una venta (Sale).
+     * Requerimos que sea 0 o positivo, no pueden existir ids negativos (aunque con uin256 imagino que ya cumple).
+     * Requerimos que el id exista para poder sacar la info de este.
+     * Devolvemos el estado de esa Sale.
+     */
     function getSale(uint256 _saleId) public view returns(Sale memory){
 
         Sale memory

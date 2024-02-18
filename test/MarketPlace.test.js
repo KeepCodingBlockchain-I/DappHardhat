@@ -98,7 +98,25 @@ describe("MarketPlace test suit", function(){
         expect (nftBalance).to.equal(signer)
     })
 
-    it("Test the cancelation", async function(){
-        
-    })
+    it("Test the cancellation", async function(){
+        //new sale
+        await deployedERC721Contract.connect(signer).mintNewToken();
+        await deployedERC721Contract.connect(signer).approve(deployedMyMarketPlaceContract.target, 5);
+        await deployedMyMarketPlaceContract.connect(signer).createSale(5, 12); // tokenId=5, price=12, pero saleId es 3
+    
+        //we check the new sale (3)
+        const saleChecked = await deployedMyMarketPlaceContract.getSale(3);
+        expect(saleChecked[0]).to.equal(signer.address);
+        expect(saleChecked[1]).to.equal(3);
+        expect(saleChecked[2]).to.equal(5);
+        expect(saleChecked[3]).to.equal(12);
+        expect(saleChecked[4]).to.equal(0);
+    
+        //we cancel the sale
+        await deployedMyMarketPlaceContract.connect(signer).cancelSale(3);
+    
+        //we get the new sale and we expect to be cancelled
+        const saleCheckedAfterCancellation = await deployedMyMarketPlaceContract.getSale(3);
+        expect(saleCheckedAfterCancellation[4]).to.equal(2);
+    });
 })

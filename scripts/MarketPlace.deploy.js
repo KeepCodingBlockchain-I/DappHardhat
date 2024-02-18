@@ -3,7 +3,7 @@ const hre = require("hardhat");
 let deployedERC20Contract, deployedERC721Contract, deployedMyMarketPlaceContract
 let contractAddress
 
-async function deploy(){
+async function deploy(deployedERC20Contract, deployedERC721Contract){
     console.log("MyMarketPlace deployment just started...")
 
     const MyMarketPlaceContract = await ethers.getContractFactory("MyMarketPlace")

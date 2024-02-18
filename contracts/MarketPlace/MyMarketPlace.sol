@@ -161,16 +161,17 @@ contract MyMarketPlace is Ownable{
         status = SaleStatus.Executed;
     }
 
-    function canceSale(uint256 _saleId) public{
+    function cancelSale(uint256 _saleId) public {
 
-        Sale storage
-        sale = sales[_saleId];
-
-        SaleStatus status;
+        Sale storage sale = sales[_saleId];
 
         require(sale.status == SaleStatus.Open, "This sale is already cancelled");
-        status = SaleStatus.Cancelled;
-        MyNFTCollectionContract.transferFrom(address(this), msg.sender, _saleId);
+
+        //we update to "Cancelled"
+        sale.status = SaleStatus.Cancelled;
+
+        //Transfer back the NFT
+        MyNFTCollectionContract.transferFrom(address(this), sale.owner, sale.tokenId);
     }
 
     function getSale(uint256 _saleId) public view returns(Sale memory){
